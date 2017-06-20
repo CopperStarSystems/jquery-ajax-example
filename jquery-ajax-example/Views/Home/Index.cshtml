@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<script language="javascript">
+    $(document).ready(function() {
+        search();
+    });
+
+
+    function handleEcho() {
+        var input = $('#echoInput').val();
+        $.ajax({
+            url: '/home/echo',
+            type: 'POST',
+            data: { input: input },
+            dataType: 'json',
+            success: function(data) {
+                var label = $('#echoOutput');
+                label.empty();
+                label.append(data);
+            },
+            error: function(req, status, err) {
+                alert(err);
+            }
+        });
+    }
+
+    function search() {
+        var input = $('#liveFilterInput').val();
+        $.ajax({
+            url: '/home/Search',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({ searchTerm: input }),
+            success: function(data) {
+                var list = $('#liveFilterOutput');
+                list.empty();
+                if (!data.length) {
+                    addOption(list, 'No Results.');
+                } else {
+                    $.each(data,
+                        function(index, obj) {
+                            addOption(list, obj.Value);
+                        });
+                }
+            }
+        });
+    }
+
+    function addOption(select, value) {
+        select.append('<option>' + value + '</option>');
+    }
+
+</script>
+
+<h2>Index</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-4">
+            <label>Simple AJAX Example (Echo input)</label>
+        </div>
+        <div class="col-xs-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <input id="echoInput" placeholder="Enter some text." type="text" onkeyup="handleEcho()"/>
+                    </div>
+                    <div class="col-xs-6">
+                        <label>Echoed from Server:</label>
+                        <h1 id="echoOutput"></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4">
+            <label>Live Filtering Example</label>
+
+        </div>
+        <div class="col-xs-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <input id="liveFilterInput" placeholder="Enter characters to filter the list." type="text" onkeyup="search()"/>
+                    </div>
+                    <div class="col-xs-8">
+                        <select size="10" id="liveFilterOutput"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
